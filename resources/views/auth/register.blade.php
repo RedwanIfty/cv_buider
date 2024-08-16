@@ -59,7 +59,7 @@
     <form action="{{ route('register') }}" method="POST">
         @csrf
         <div class="d-flex gap-2 justify-content-center mb-4">
-            <img src="{{asset('assets/images/logo.png')}}" alt="Logo">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
             <div>
                 <h1 class="h3 fw-normal my-1"><b>CV</b> Maker</h1>
                 <p class="m-0">Create your new account</p>
@@ -83,6 +83,7 @@
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+
         <div class="form-floating mb-3">
             <input type="email" class="form-control @error('email') is-invalid @enderror" id="floatingEmail" name="email" placeholder="name@example.com" value="{{ old('email') }}" required>
             <label for="floatingEmail"><i class="bi bi-envelope"></i> Email address</label>
@@ -90,20 +91,25 @@
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+
         <div class="form-floating mb-3">
             <input type="password" class="form-control @error('password') is-invalid @enderror" id="floatingPassword" name="password" placeholder="Password" required>
             <label for="floatingPassword"><i class="bi bi-key"></i> Password</label>
             @error('password')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+            <div id="passwordStrength" class="form-text"></div>
         </div>
+
         <div class="form-floating mb-3">
             <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="floatingPasswordConfirmation" name="password_confirmation" placeholder="Confirm Password" required>
             <label for="floatingPasswordConfirmation"><i class="bi bi-key"></i> Confirm Password</label>
             @error('password_confirmation')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+            <div id="passwordMatch" class="form-text"></div>
         </div>
+
         <button class="btn btn-primary w-100 py-2" type="submit"><i class="bi bi-person-plus-fill"></i> Register</button>
         <div class="d-flex justify-content-between my-3">
             <a href="#" class="text-decoration-none">Forgot Password?</a>
@@ -111,6 +117,59 @@
         </div>
     </form>
 </main>
-</body>
 
+<script>
+    const passwordInput = document.getElementById('floatingPassword');
+    const passwordStrength = document.getElementById('passwordStrength');
+    const confirmPasswordInput = document.getElementById('floatingPasswordConfirmation');
+    const passwordMatch = document.getElementById('passwordMatch');
+
+    passwordInput.addEventListener('input', updatePasswordIndicators);
+    confirmPasswordInput.addEventListener('input', updatePasswordIndicators);
+
+    function updatePasswordIndicators() {
+        // Update password strength
+
+        const strength = getPasswordStrength(passwordInput.value);
+        passwordStrength.textContent = strength.text;
+        passwordStrength.style.color = strength.color;
+
+        // Check if passwords match
+        if (confirmPasswordInput.value !== '') {
+            if (passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.style.color = 'green';
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.style.color = 'red';
+            }
+        } else {
+            passwordMatch.textContent = '';
+        }
+    }
+
+    function getPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+        switch (strength) {
+            case 0:
+            case 1:
+                return { text: 'Very Weak', color: 'red' };
+            case 2:
+                return { text: 'Weak', color: 'orange' };
+            case 3:
+                return { text: 'Medium', color: 'yellow' };
+            case 4:
+                return { text: 'Strong', color: 'blue' };
+            case 5:
+                return { text: 'Very Strong', color: 'green' };
+        }
+    }
+</script>
+</body>
 </html>

@@ -29,7 +29,7 @@ class CVController extends Controller
         $request->validate([
             // Users table validation
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|max:255',
+            'email' => 'required|email|unique:users,email|max:255 . $user->id',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
